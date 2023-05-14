@@ -12,6 +12,8 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@headlessui/react": "^1.7.14",
+    "@heroicons/react": "^2.0.18",
     "@tigrisdata/core": "^1.1.0",
     "@types/node": "20.1.4",
     "@types/react": "18.2.6",
