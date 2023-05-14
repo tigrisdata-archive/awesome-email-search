@@ -3,12 +3,16 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "tigris:setup": "npx ts-node ./scripts/setup.ts",
+    "predev": "npm run tigris:setup",
     "dev": "next dev",
+    "prebuild": "npm run tigris:setup",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
   },
   "dependencies": {
+    "@tigrisdata/core": "^1.1.0",
     "@types/node": "20.1.4",
     "@types/react": "18.2.6",
     "@types/react-dom": "18.2.4",
@@ -19,7 +23,11 @@
     "postcss": "8.4.23",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+    "resend": "^0.14.0",
     "tailwindcss": "3.3.2",
     "typescript": "5.0.4"
+  },
+  "devDependencies": {
+    "@tailwindcss/forms": "^0.5.3"
   }
 }
