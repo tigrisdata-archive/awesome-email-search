@@ -28,7 +28,7 @@ export const Alert = (props: AlertProps) => {
       <div className="pr-5">
         <span className="font-medium">{props.title}</span> {props.text}
       </div>
-      <div className="absolute top-1 right-1 w-4 h-4 text-gray-600 text-opacity-50 cursor-pointer hover:text-opacity-100">
+      <div className="ml-10 w-5 h-5 text-gray-600 text-opacity-50 cursor-pointer hover:text-opacity-100">
         <XCircleIcon
           onClick={() => {
             setClosed(true);

@@ -23,12 +23,12 @@ export default function Search() {
       <form
         action="/api/email"
         method="POST"
-        className="grid grid-cols-4 gap-6 w-4/6"
+        className="flex flex-col lg:flex-row gap-6 w-5/6 lg:w-4/6"
       >
         <input
           type="text"
           name="search"
-          className="col-span-3 rounded-lg bg-white text-left shadow-md focus:outline-none focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-teal-300 sm:text-sm mt-2 text-slate-950 font-sans"
+          className="rounded-lg lg:grow bg-white text-left shadow-md focus:outline-none focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-teal-300 sm:text-sm mt-2 text-slate-950 font-sans"
         />
         <MultiSelect
           onChange={handleStatusFacetChange}

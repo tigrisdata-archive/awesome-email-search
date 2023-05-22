@@ -1,24 +1,56 @@
+'use client';
+
 import Image from 'next/image';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+
+const links = [
+  {
+    name: 'Search',
+    path: '/search',
+  },
+  {
+    name: 'Send',
+    path: '/send',
+  },
+];
 
 export default function Header() {
+  const pathname = usePathname();
+
   return (
     <header className="w-full max-w-5xl">
       <div className="z-10 w-full items-center justify-between font-mono text-sm lg:flex">
         <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
           <Link href="/">Awesome Email Search</Link>
         </p>
-        <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:h-auto lg:w-auto lg:bg-none">
+        <div className="fixed bottom-0 left-0 flex w-full items-start justify-center lg:justify-start py-4 lg:py-0 lg:static h-auto lg:w-auto bg-gray-950 lg:bg-none z-10">
+          <span className="flex self-start">With</span>
           <a
-            className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
+            className="pointer-events-none flex place-items-start gap-2 lg:pointer-events-auto lg:p-0 ml-2 mr-2"
+            href="https://www.tigrisdata.com?utm_source=awesome-email-search&utm_medium=code&utm_campaign=awesome-email-search"
             target="_blank"
             rel="noopener noreferrer"
           >
-            With{' '}
             <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
+              src="/resend.svg"
+              alt="Resend Logo"
+              className="light:invert"
+              width={100}
+              height={24}
+              priority
+            />
+          </a>
+          <span className="flex self-start">&amp;</span>
+          <a
+            className="pointer-events-none flex place-items-center gap-2 lg:pointer-events-auto lg:p-0 ml-2"
+            href="https://resend.com?utm_source=awesome-email-search&utm_medium=code&utm_campaign=awesome-email-search"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <Image
+              src="/tigris.svg"
+              alt="Tigris Logo"
               className="dark:invert"
               width={100}
               height={24}
@@ -27,13 +59,19 @@ export default function Header() {
           </a>
         </div>
       </div>
-      <div className="flex w-full max-w-5xl justify-start space-x-20 lg:pl-4 mt-4">
-        <p>
-          <Link href="/search">Search</Link>
-        </p>
-        <p>
-          <Link href="/send">Send</Link>
-        </p>
+      <div className="flex w-full mt-20 lg:top-auto max-w-5xl justify-center lg:justify-start space-x-20 lg:pl-4 lg:mt-4">
+        {links.map((link) => {
+          return (
+            <p key={link.name}>
+              <Link
+                href={link.path}
+                className={pathname === link.path ? 'font-bold underline' : ''}
+              >
+                {link.name}
+              </Link>
+            </p>
+          );
+        })}
       </div>
     </header>
   );
