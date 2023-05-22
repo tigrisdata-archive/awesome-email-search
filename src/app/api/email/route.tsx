@@ -16,6 +16,7 @@ export async function POST(request: Request) {
 
   try {
     const formData = await request.formData();
+    log('Form data', JSON.stringify(formData, null, 2));
     if (!formData.get('stage')) {
       throw new Error('No onboarding stage was provided');
     }
