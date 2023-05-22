@@ -1,4 +1,8 @@
-import { SearchField, TigrisSearchIndex } from '@tigrisdata/core';
+import {
+  SearchField,
+  TigrisDataTypes,
+  TigrisSearchIndex,
+} from '@tigrisdata/core';
 
 export enum EmailStatus {
   Sent,
@@ -8,13 +12,18 @@ export enum EmailStatus {
   Bounced,
 }
 
-@TigrisSearchIndex('emails')
+export const EMAIL_INDEX_NAME = 'emails';
+
+@TigrisSearchIndex(EMAIL_INDEX_NAME)
 export class Email {
   @SearchField({ id: true })
   id?: string;
 
   @SearchField({ sort: true })
-  to!: string;
+  firstTo!: string;
+
+  @SearchField({ elements: TigrisDataTypes.STRING })
+  to!: string[];
 
   @SearchField({ sort: true })
   from!: string;
@@ -24,4 +33,7 @@ export class Email {
 
   @SearchField({ sort: true, facet: true })
   status!: EmailStatus;
+
+  @SearchField({ sort: true })
+  createdAt!: Date;
 }
