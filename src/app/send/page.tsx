@@ -13,6 +13,8 @@ export default function Send({
   const [selectedTemplate, setTemplate] = useState<IEmailTemplate>(
     EmailTemplates['welcome']
   );
+  const [submitting, setSubmitting] = useState<boolean>(false);
+
   return (
     <Row>
       {searchParams.success && searchParams.success === 'true' && (
@@ -35,45 +37,52 @@ export default function Send({
       <form
         action="/api/email"
         method="POST"
-        className="grid grid-cols-1 gap-6 w-2/6"
+        className="w-5/6 lg:w-2/6"
+        onSubmit={() => setSubmitting(true)}
       >
-        <label className="block">
-          <span>Email onboarding template</span>
-          <select
-            className="mt-1 block w-full form-select text-slate-950 font-sans"
-            name="stage"
-            onChange={(e) => {
-              setTemplate(EmailTemplates[e.target.value]);
-            }}
-          >
-            {Object.keys(EmailTemplates).map((key) => {
-              const template = EmailTemplates[key];
-              return (
-                <option key={key} value={key}>
-                  {template.templateName}
-                </option>
-              );
-            })}
-          </select>
-        </label>
-        {selectedTemplate.fields.map((field) => {
-          return (
-            <label key={field.formName} className="block">
-              <span>{field.displayName}</span>
-              <input
-                className="mt-1 block w-full form-input text-slate-950 font-sans"
-                type="text"
-                name={field.formName}
-                required
-              />
-            </label>
-          );
-        })}
-        <label className="flex justify-end">
-          <button className="px-4 py-2 font-semibold text-sm bg-green-50 dark:bg-gray-800 text-white rounded-md shadow-sm opacity-100">
-            Send
-          </button>
-        </label>
+        <fieldset className="grid grid-cols-1 gap-6">
+          <label className="block">
+            <span>Email onboarding template</span>
+            <select
+              className="mt-1 block w-full form-select text-slate-950 font-sans"
+              name="stage"
+              onChange={(e) => {
+                setTemplate(EmailTemplates[e.target.value]);
+              }}
+            >
+              {Object.keys(EmailTemplates).map((key) => {
+                const template = EmailTemplates[key];
+                return (
+                  <option key={key} value={key}>
+                    {template.templateName}
+                  </option>
+                );
+              })}
+            </select>
+          </label>
+          {selectedTemplate.fields.map((field) => {
+            return (
+              <label key={field.formName} className="block">
+                <span>{field.displayName}</span>
+                <input
+                  className="mt-1 block w-full form-input text-slate-950 font-sans"
+                  type="text"
+                  name={field.formName}
+                  required
+                  readOnly={submitting}
+                />
+              </label>
+            );
+          })}
+          <label className="flex justify-end">
+            <button
+              className="px-4 py-2 font-semibold text-sm bg-green-50 dark:bg-gray-800 text-white rounded-md shadow-sm opacity-100 hover:bg-green-300 hover:dark:bg-gray-600"
+              disabled={submitting}
+            >
+              {submitting ? 'Submitting...' : 'Send'}
+            </button>
+          </label>
+        </fieldset>
       </form>
     </Row>
   );
