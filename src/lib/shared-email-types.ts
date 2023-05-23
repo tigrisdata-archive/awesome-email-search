@@ -4,6 +4,14 @@ export enum EmailStatus {
   DeliveryDelayed,
   Complained,
   Bounced,
+  Clicked,
+  Opened,
+}
+
+export enum TestEmailStatus {
+  Delivered,
+  Complained,
+  Bounced,
 }
 
 export interface EmailResult {

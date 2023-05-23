@@ -5,6 +5,7 @@ import { EmailTemplates } from '@/lib/email-templates';
 import reactElementToJSXString from 'react-element-to-jsx-string';
 import { log } from '@/lib/log';
 import { NextResponse } from 'next/server';
+import { TestEmailStatus } from '@/lib/shared-email-types';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 const tigris = new Tigris();
@@ -59,12 +60,31 @@ export async function GET(request: Request) {
   return NextResponse.json(response);
 }
 
+const getToEmail = (testEmailStatus: TestEmailStatus | string) => {
+  log('getToEmail', testEmailStatus, TestEmailStatus.Bounced);
+
+  switch (testEmailStatus) {
+    case TestEmailStatus.Bounced:
+      return 'bounced@resend.dev';
+      break;
+    case TestEmailStatus.Delivered:
+      return 'delivered@resend.dev';
+    case TestEmailStatus.Complained:
+      return 'complained@resend.dev';
+      break;
+    case '':
+      return process.env.DEFAULT_EMAIL as string;
+      break;
+    default:
+      throw new Error('Could not determine test email status');
+  }
+};
+
 export async function POST(request: Request) {
   let emailIndex;
   let errorStatus = 400;
   try {
     const formData = await request.formData();
-    log('Form data', JSON.stringify(formData, null, 2));
     if (!formData.get('stage')) {
       errorStatus = 400;
       throw new Error('No onboarding stage was provided');
@@ -84,10 +104,20 @@ export async function POST(request: Request) {
       link: formData.get('link')?.valueOf() as string,
     })!;
 
-    console.log('created email', JSON.stringify(body, null, 2));
+    console.log('created email');
+    const testEmailStatus = formData.get('testEmailStatus')
+      ? TestEmailStatus[
+          formData.get('testEmailStatus') as unknown as TestEmailStatus
+        ]
+      : '';
+    log(
+      'testEmailStatus',
+      testEmailStatus,
+      `[${formData.get('testEmailStatus')}]`
+    );
     const sendEmailRequest: SendEmailData = {
-      from: 'phil@leggetter.co.uk',
-      to: ['phil@leggetter.co.uk'],
+      from: process.env.DEFAULT_EMAIL as string,
+      to: [getToEmail(testEmailStatus)],
       subject: emailTemplate.emailSubject,
       react: body,
     };

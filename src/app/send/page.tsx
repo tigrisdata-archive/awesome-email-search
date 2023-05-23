@@ -3,6 +3,7 @@
 import { Alert } from '@/components/alert';
 import Row from '@/components/row';
 import { EmailTemplates } from '@/lib/email-templates';
+import { TestEmailStatus } from '@/lib/shared-email-types';
 import { FormEvent, useState } from 'react';
 
 export default function Send() {
@@ -12,6 +13,7 @@ export default function Send() {
   const defaultTemplateName = Object.keys(EmailTemplates)[0];
   const [formData, setFormData] = useState<Record<string, string>>({
     stage: defaultTemplateName,
+    testEmailStatus: '',
   });
 
   const handleSubmit = async (
@@ -28,7 +30,7 @@ export default function Send() {
     const success = response.status === 201;
     setSubmitSuccess(success);
     if (success) {
-      setFormData({ stage: defaultTemplateName });
+      setFormData({ stage: defaultTemplateName, testEmailStatus: '' });
     } else {
       try {
         const result = await response.json();
@@ -49,21 +51,16 @@ export default function Send() {
 
   return (
     <Row>
-      {submitSuccess !== undefined && submitSuccess === true && (
-        <Alert
-          title="Email successfully sent"
-          type="SUCCESS"
-          className="mb-10"
-        />
-      )}
-      {submitSuccess !== undefined && submitSuccess === false && (
-        <Alert
-          title="Email sending failed"
-          text={error}
-          type="ERROR"
-          className="mb-10"
-        />
-      )}
+      <Alert
+        title={
+          submitSuccess ? 'Email successfully sent' : 'Email sending failed'
+        }
+        type={submitSuccess ? 'SUCCESS' : 'ERROR'}
+        text={submitSuccess ? '' : error}
+        className="mb-10"
+        open={submitSuccess !== undefined}
+        onClose={() => setSubmitSuccess(undefined)}
+      />
       <h1 className="text-lg pb-4">Send an email</h1>
       <form
         action="/api/email"
@@ -110,6 +107,31 @@ export default function Send() {
               </label>
             );
           })}
+          <label className="block">
+            <span>Test email status</span>
+            <select
+              name="test_email_status"
+              value={formData['testEmailStatus']}
+              className="mt-1 block w-full form-input text-slate-950 font-sans"
+              onChange={(e) => {
+                const val = e.target.value;
+                const status: TestEmailStatus | '' =
+                  val === '' ? '' : (val as unknown as TestEmailStatus);
+                updateFormData('testEmailStatus', status as string);
+              }}
+            >
+              <option value="">None</option>
+              {Object.keys(TestEmailStatus)
+                .filter((status) => isNaN(Number(status)))
+                .map((status) => {
+                  return (
+                    <option key={status} value={status}>
+                      {status}
+                    </option>
+                  );
+                })}
+            </select>
+          </label>
           <label className="flex justify-end">
             <button
               className="px-4 py-2 font-semibold text-sm bg-green-50 dark:bg-gray-800 text-white rounded-md shadow-sm opacity-100 hover:bg-green-300 hover:dark:bg-gray-600"

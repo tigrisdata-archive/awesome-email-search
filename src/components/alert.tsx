@@ -6,6 +6,8 @@ export type AlertProps = {
   text?: string;
   type: 'SUCCESS' | 'ERROR';
   className?: string;
+  open: boolean;
+  onClose: () => void;
 };
 
 const errorCss = 'text-red-800 bg-red-50 dark:bg-gray-800 dark:text-red-400';
@@ -13,12 +15,12 @@ const successCss =
   'text-green-800 bg-green-50 dark:bg-gray-800 dark:text-green-400';
 
 export const Alert = (props: AlertProps) => {
-  const [closed, setClosed] = useState<boolean>(false);
-  if (closed) return <></>;
+  const [open, setOpen] = useState<boolean>(props.open);
+  if (!open) return <></>;
 
   return (
     <div
-      className={`fixed top-10 flex p-4 text-sm rounded-lg ${
+      className={`fixed top-15 flex p-4 text-sm rounded-lg z-30 ${
         props.type === 'SUCCESS' ? successCss : errorCss
       } ${props.className}`}
       role="alert"
@@ -31,7 +33,8 @@ export const Alert = (props: AlertProps) => {
       <div className="ml-10 w-5 h-5 text-gray-600 text-opacity-50 cursor-pointer hover:text-opacity-100">
         <XCircleIcon
           onClick={() => {
-            setClosed(true);
+            setOpen(false);
+            props.onClose();
           }}
         />
       </div>

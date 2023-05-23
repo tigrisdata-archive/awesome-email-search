@@ -66,13 +66,13 @@ export const EmailSearch = (props: EmailSearchProps) => {
 
   return (
     <Row>
-      {searchError && (
-        <Alert
-          title="A problem occured with the search"
-          type="ERROR"
-          text={searchError}
-        />
-      )}
+      <Alert
+        title="A problem occured with the search"
+        type="ERROR"
+        text={searchError}
+        open={searchError !== ''}
+        onClose={() => setSearchError('')}
+      />
 
       <h1 className="text-lg pb-4">Search</h1>
 
