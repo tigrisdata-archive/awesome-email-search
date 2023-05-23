@@ -2,33 +2,64 @@
 
 import { Alert } from '@/components/alert';
 import Row from '@/components/row';
-import { EmailTemplates, IEmailTemplate } from '@/lib/email-templates';
-import { useState } from 'react';
+import { EmailTemplates } from '@/lib/email-templates';
+import { FormEvent, useState } from 'react';
 
-export default function Send({
-  searchParams,
-}: {
-  searchParams: { success: string; description?: string };
-}) {
-  const [selectedTemplate, setTemplate] = useState<IEmailTemplate>(
-    EmailTemplates['welcome']
-  );
+export default function Send() {
   const [submitting, setSubmitting] = useState<boolean>(false);
+  const [submitSuccess, setSubmitSuccess] = useState<boolean | undefined>();
+  const [error, setError] = useState<string | undefined>('');
+  const defaultTemplateName = Object.keys(EmailTemplates)[0];
+  const [formData, setFormData] = useState<Record<string, string>>({
+    stage: defaultTemplateName,
+  });
+
+  const handleSubmit = async (
+    event: FormEvent<HTMLFormElement>
+  ): Promise<void> => {
+    event.preventDefault();
+    setSubmitting(true);
+
+    const response = await fetch('/api/email', {
+      method: 'POST',
+      body: new URLSearchParams(formData),
+    });
+
+    const success = response.status === 201;
+    setSubmitSuccess(success);
+    if (success) {
+      setFormData({ stage: defaultTemplateName });
+    } else {
+      try {
+        const result = await response.json();
+        setError(result.error);
+      } catch (_ex) {
+        setError('An unknown error occured.');
+      }
+    }
+    setSubmitting(false);
+  };
+
+  const updateFormData = (formName: string, value: string): void => {
+    setFormData((prev) => ({
+      ...prev,
+      [formName]: value,
+    }));
+  };
 
   return (
     <Row>
-      {searchParams.success && searchParams.success === 'true' && (
+      {submitSuccess !== undefined && submitSuccess === true && (
         <Alert
           title="Email successfully sent"
-          text={searchParams.description}
           type="SUCCESS"
           className="mb-10"
         />
       )}
-      {searchParams.success && searchParams.success === 'false' && (
+      {submitSuccess !== undefined && submitSuccess === false && (
         <Alert
           title="Email sending failed"
-          text={searchParams.description}
+          text={error}
           type="ERROR"
           className="mb-10"
         />
@@ -38,7 +69,7 @@ export default function Send({
         action="/api/email"
         method="POST"
         className="w-5/6 lg:w-2/6"
-        onSubmit={() => setSubmitting(true)}
+        onSubmit={handleSubmit}
       >
         <fieldset className="grid grid-cols-1 gap-6">
           <label className="block">
@@ -47,8 +78,9 @@ export default function Send({
               className="mt-1 block w-full form-select text-slate-950 font-sans"
               name="stage"
               onChange={(e) => {
-                setTemplate(EmailTemplates[e.target.value]);
+                updateFormData('stage', e.target.value);
               }}
+              value={formData['stage']}
             >
               {Object.keys(EmailTemplates).map((key) => {
                 const template = EmailTemplates[key];
@@ -60,16 +92,20 @@ export default function Send({
               })}
             </select>
           </label>
-          {selectedTemplate.fields.map((field) => {
+          {EmailTemplates[formData['stage']].fields.map((field) => {
             return (
               <label key={field.formName} className="block">
                 <span>{field.displayName}</span>
                 <input
+                  onChange={(ev) =>
+                    updateFormData(field.formName, ev.target.value)
+                  }
                   className="mt-1 block w-full form-input text-slate-950 font-sans"
                   type="text"
                   name={field.formName}
                   required
                   readOnly={submitting}
+                  value={formData[field.formName] || ''}
                 />
               </label>
             );

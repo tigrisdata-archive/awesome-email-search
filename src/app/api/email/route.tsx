@@ -1,5 +1,4 @@
 import { EmailResponse, Resend, SendEmailData } from 'resend';
-import { redirect } from 'next/navigation';
 import { Filter, SearchQuery, Tigris } from '@tigrisdata/core';
 import { EMAIL_INDEX_NAME, Email, EmailStatus } from '@/db/models/email';
 import { EmailTemplates } from '@/lib/email-templates';
@@ -61,16 +60,20 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
+  let emailIndex;
+  let errorStatus = 400;
   try {
     const formData = await request.formData();
     log('Form data', JSON.stringify(formData, null, 2));
     if (!formData.get('stage')) {
+      errorStatus = 400;
       throw new Error('No onboarding stage was provided');
     }
 
     const emailTemplate = EmailTemplates[formData.get('stage') as string];
 
     if (!emailTemplate) {
+      errorStatus = 400;
       throw new Error(
         `Could not find email template for stage "${formData.get('stage')}"`
       );
@@ -94,7 +97,7 @@ export async function POST(request: Request) {
     const bodyString = reactElementToJSXString(body);
     log('created body string', bodyString);
 
-    const index = {
+    emailIndex = {
       to: sendEmailRequest.to as string[],
       firstTo: sendEmailRequest.to[0] as string, // store the first email so we can sort by email address
       from: sendEmailRequest.from,
@@ -104,21 +107,17 @@ export async function POST(request: Request) {
       createdAt: new Date(),
       id: (sendResponse as EmailResponse).id,
     };
-    log('creating index', index);
+    log('creating index', emailIndex);
     const emails = await search.getIndex<Email>(EMAIL_INDEX_NAME);
-    const createResult = await emails.createOne(index);
+    const createResult = await emails.createOne(emailIndex);
     if (createResult.error) {
       console.error('Error occurred saving search index', createResult.error);
+    } else {
+      log('Index created', createResult);
     }
-  } catch (ex) {
+  } catch (ex: any) {
     console.error(ex);
-    const redirectTo = new URL(
-      `/send?success=false&description=${ex}`,
-      request.url
-    );
-    redirect(redirectTo.href);
+    return NextResponse.json({ error: ex.toString() }, { status: errorStatus });
   }
-
-  const redirectTo = new URL(`/send?success=true`, request.url);
-  redirect(redirectTo.href);
+  return NextResponse.json(emailIndex, { status: 201 });
 }
