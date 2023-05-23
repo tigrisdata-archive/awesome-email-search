@@ -7,6 +7,25 @@ import { Alert } from './alert';
 import MultiSelect from './multi-select';
 import { searchEmail } from '@/lib/email-search';
 
+const EmailStatusLabel = ({ status }: { status: EmailStatus }) => {
+  let statusCss = '';
+  switch (status) {
+    case EmailStatus.Sent:
+      statusCss = 'bg-orange-200 text-orange-950';
+      break;
+    case EmailStatus.Delivered:
+      statusCss = 'bg-green-200 text-green-950';
+      break;
+  }
+  return (
+    <span
+      className={`capitalize inline-flex cursor-default select-none items-center whitespace-nowrap font-semibold text-xs h-6 px-2 rounded ${statusCss}`}
+    >
+      {EmailStatus[status]}
+    </span>
+  );
+};
+
 export type EmailSearchProps = {
   query: string;
   statuses: string;
@@ -80,62 +99,85 @@ export const EmailSearch = (props: EmailSearchProps) => {
         />
         <button
           disabled={searching}
-          className="w-36 px-4 font-semibold text-sm bg-green-50 dark:bg-gray-800 text-white rounded-md shadow-sm opacity-100 hover:bg-green-300 hover:dark:bg-gray-600"
+          className="flex-grow lg:grow-0 h-9 lg:w-36 px-4 font-semibold text-sm bg-green-50 dark:bg-gray-800 text-white rounded-md shadow-sm opacity-100 hover:bg-green-300 hover:dark:bg-gray-600"
         >
           {searching ? 'Searching...' : 'Search'}
         </button>
       </form>
 
-      <div className="mt-10 relative overflow-x-auto shadow-md sm:rounded-lg w-5/6 lg:w-4/6">
+      <div className="mt-10 relative overflow-x-scroll shadow-md sm:rounded-lg w-5/6 lg:w-4/6 mx-4">
         {searching && <p>Searching...</p>}
-        {emailResults.length === 0 && <p>No email results found</p>}
+        {!searching && emailResults.length === 0 && (
+          <p>No email results found</p>
+        )}
         {!searching && emailResults.length > 0 && (
-          <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-            <thead className="text-sm text-gray-700 uppercase bg-gray-600 dark:bg-gray-900 dark:text-gray-400">
-              <tr className="text-left">
-                <th scope="col" className="px-6 py-3">
+          <table className="min-w-full border-separate border-spacing-0 border-none text-left z-0">
+            <thead className="h-8 rounded-md bg-zinc-900">
+              <tr className="text-left text-slate-200 text-xs font-semibold">
+                <th
+                  scope="col"
+                  className="w-[100px] h-8 border-t border-b border-slate-600 px-3 first:rounded-l-md first:border-l last:rounded-r-md last:border-r"
+                >
+                  Status
+                </th>
+                <th
+                  scope="col"
+                  className="w-[302px] h-8 border-t border-b border-slate-600 first:rounded-l-md first:border-l last:rounded-r-md last:border-r"
+                >
                   To
                 </th>
-                <th scope="col" className="px-6 py-3">
+                <th
+                  scope="col"
+                  className=" h-8 border-t border-b border-slate-600 px-3 first:rounded-l-md first:border-l last:rounded-r-md last:border-r"
+                >
                   From
                 </th>
-                <th scope="col" className="px-6 py-3">
+                <th
+                  scope="col"
+                  className="h-8 border-t border-b border-slate-600 px-3 first:rounded-l-md first:border-l last:rounded-r-md last:border-r"
+                >
                   Subject
                 </th>
-                <th scope="col" className="px-6 py-3">
+                <th
+                  scope="col"
+                  className="h-8 border-t border-b border-slate-600 px-3 text-xs font-semibold text-slate-200 first:rounded-l-md first:border-l last:rounded-r-md last:border-r"
+                >
                   Body
                 </th>
-                <th scope="col" className="px-6 py-3">
+                <th
+                  scope="col"
+                  className="text-right h-8 border-t border-b border-slate-600 px-3 text-xs font-semibold text-slate-200 first:rounded-l-md first:border-l last:rounded-r-md last:border-r"
+                >
                   Sent
-                </th>
-                <th scope="col" className="px-6 py-3">
-                  Status
                 </th>
               </tr>
             </thead>
             <tbody>
               {emailResults.map((email) => {
                 return (
-                  <tr
-                    key={email.id}
-                    className="bg-white border-b dark:bg-gray-800 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700"
-                  >
-                    <th
+                  <tr key={email.id} className="text-slate-200">
+                    <td className="h-10 truncate border-b border-slate-600 px-3 text-sm">
+                      <EmailStatusLabel status={email.status} />
+                    </td>
+                    <td
                       scope="row"
-                      className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+                      className="h-10 truncate border-b border-slate-600 px-3 text-sm font-medium whitespace-nowrap dark:text-white"
                     >
                       {email.to.join(', ')}
-                    </th>
-                    <td className="px-6 py-4">{email.from}</td>
-                    <td className="px-6 py-4">{email.subject}</td>
-                    <td className="px-6 py-4">{`${email.body.substring(
+                    </td>
+                    <td className="h-10 truncate border-b border-slate-600 px-3 text-sm">
+                      {email.from}
+                    </td>
+                    <td className="h-10 truncate border-b border-slate-600 px-3 text-sm">
+                      {email.subject}
+                    </td>
+                    <td className="h-10 truncate border-b border-slate-600 px-3 text-sm">{`${email.body.substring(
                       0,
                       10
                     )}...`}</td>
-                    <td className="px-6 py-4">
+                    <td className="h-10 truncate border-b border-slate-600 px-3 text-sm">
                       {email.createdAt.toLocaleString()}
                     </td>
-                    <td className="px-6 py-4">{EmailStatus[email.status]}</td>
                   </tr>
                 );
               })}
