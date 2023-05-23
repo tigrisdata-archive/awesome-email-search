@@ -41,7 +41,7 @@ export default function MultiSelect(props: MultiSelectProps) {
     <div className="flex justify-center items-center z-10">
       <div className="top-16 w-full">
         <Combobox value={selected} onChange={handleOnChange} multiple>
-          <div className="relative mt-2">
+          <div className="relative">
             <div className="relative w-full cursor-default text-left shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-teal-300 focus-visible:ring-opacity-75 focus-visible:ring-offset-2 sm:text-sm rounded-lg">
               <Combobox.Input
                 className="w-full pr-10 rounded-lg bg-white text-left shadow-md focus:outline-none focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-teal-300 sm:text-sm text-slate-950 font-sans"

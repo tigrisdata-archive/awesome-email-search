@@ -1,21 +1,15 @@
+import { EmailStatus, EmailResult } from '../../lib/shared-email-types';
+export { EmailStatus } from '../../lib/shared-email-types';
 import {
   SearchField,
   TigrisDataTypes,
   TigrisSearchIndex,
 } from '@tigrisdata/core';
 
-export enum EmailStatus {
-  Sent,
-  Delivered,
-  DeliveryDelayed,
-  Complained,
-  Bounced,
-}
-
 export const EMAIL_INDEX_NAME = 'emails';
 
 @TigrisSearchIndex(EMAIL_INDEX_NAME)
-export class Email {
+export class Email implements EmailResult {
   @SearchField({ id: true })
   id?: string;
 
@@ -29,6 +23,9 @@ export class Email {
   from!: string;
 
   @SearchField({ sort: true })
+  subject!: string;
+
+  @SearchField()
   body!: string;
 
   @SearchField({ sort: true, facet: true })
