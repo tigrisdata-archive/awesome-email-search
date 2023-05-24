@@ -1,22 +1,27 @@
 'use client';
 
 import { FormEvent, useCallback, useEffect, useState } from 'react';
+import { DateTime } from 'luxon';
+import { useDebounce } from 'use-debounce';
+
+// Custome libs
 import {
   EmailResult,
   EmailStatus,
   SearchResponse,
   SortDirection,
 } from '@/lib/shared-email-types';
-import Row from './row';
-import { Alert } from './alert';
-import MultiSelect from './multi-select';
 import { searchEmail } from '@/lib/email-search';
-import { DateTime } from 'luxon';
+import useNoInitialEffect from '@/lib/use-no-initial-effect';
+
+// components
 import {
   ChevronDoubleDownIcon,
   ChevronDoubleUpIcon,
 } from '@heroicons/react/20/solid';
-import useNoInitialEffect from '@/lib/use-no-initial-effect';
+import Row from './row';
+import { Alert } from './alert';
+import MultiSelect from './multi-select';
 import { SearchMeta } from '@tigrisdata/core';
 import { EmailSearchNav } from './email-search-nav';
 
@@ -68,6 +73,7 @@ export const EmailSearch = (props: EmailSearchProps) => {
   if (props.pageNumber <= 0) throw new Error('pageNumber must be > 0');
 
   const [searchQueryValue, setSearchQueryValue] = useState<string>(props.query);
+  const [debouncedSearchQueryValue] = useDebounce(searchQueryValue, 500);
   const [statusesValue, setStatusesValue] = useState<string>(props.statuses);
   const [sortDir, setSortDir] = useState<SortDirection>(props.sortDir);
   const [searchMeta, setSearchMeta] = useState<SearchMeta>(props.meta);
@@ -86,7 +92,7 @@ export const EmailSearch = (props: EmailSearchProps) => {
     setSearching(true);
 
     const response = await searchEmail({
-      query: searchQueryValue,
+      query: debouncedSearchQueryValue,
       statuses: statusesValue,
       sortdir: sortDir,
       page: pageNumber,
@@ -103,13 +109,18 @@ export const EmailSearch = (props: EmailSearchProps) => {
     }
 
     setSearching(false);
-  }, [searchQueryValue, statusesValue, sortDir, pageNumber]);
+  }, [debouncedSearchQueryValue, statusesValue, sortDir, pageNumber]);
+
+  useEffect(() => {
+    if (debouncedSearchQueryValue) {
+      performSearch();
+    }
+  }, [debouncedSearchQueryValue, performSearch]);
 
   useNoInitialEffect(() => {
     performSearch();
-    // Submit should perform the search unless the sortDir changes
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pageNumber, sortDir]);
+  }, [performSearch, pageNumber, sortDir]);
 
   const handleSubmit = async (
     event: FormEvent<HTMLFormElement>
