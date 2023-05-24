@@ -1,6 +1,6 @@
 import { EMAIL_INDEX_NAME, Email } from '@/db/models/email';
 import { log } from '@/lib/log';
-import { EMAIL_CACHE_TAG, EmailStatus } from '@/lib/shared-email-types';
+import { EmailStatus } from '@/lib/shared-email-types';
 import { Tigris } from '@tigrisdata/core';
 import { revalidateTag } from 'next/cache';
 import { NextResponse } from 'next/server';
@@ -71,7 +71,7 @@ export async function POST(request: Request) {
       console.error(msg);
       throw new Error(msg);
     }
-    revalidateTag(EMAIL_CACHE_TAG);
+
     return NextResponse.json({}, { status: 200 });
   } catch (ex) {
     return NextResponse.json({}, { status: errorStatusCode });

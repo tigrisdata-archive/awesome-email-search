@@ -1,6 +1,12 @@
 'use client';
 
-import { FormEvent, useCallback, useEffect, useState } from 'react';
+import {
+  FormEvent,
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useState,
+} from 'react';
 import { DateTime } from 'luxon';
 import { useDebounce } from 'use-debounce';
 
@@ -117,9 +123,9 @@ export const EmailSearch = (props: EmailSearchProps) => {
     }
   }, [debouncedSearchQueryValue, performSearch]);
 
-  useNoInitialEffect(() => {
+  // Avoids the flash of the results re-loading
+  useLayoutEffect(() => {
     performSearch();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [performSearch, pageNumber, sortDir]);
 
   const handleSubmit = async (
