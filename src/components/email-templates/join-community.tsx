@@ -8,7 +8,8 @@ export const JoinCommunityEmailTemplate: React.FC<
     <h1>Welcome, {name}!</h1>
     <p>
       We hope your time with our product is going well. We wanted to let you
-      know we have a fantastic community that we'd love you to be a part of.
+      know we have a fantastic community that we&apos;d love you to be a part
+      of.
     </p>
     <a href={link}>
       <button>Join our community</button>

@@ -7,7 +7,8 @@ export const WelcomeEmailTemplate: React.FC<Readonly<EmailTemplateProps>> = ({
   <div>
     <h1>Welcome, {name}!</h1>
     <p>
-      Thanks signing up for our product. We're thrilled to have you on board.
+      Thanks signing up for our product. We&apos;re thrilled to have you on
+      board.
     </p>
   </div>
 );
