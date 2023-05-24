@@ -25,7 +25,7 @@ export const Alert = (props: AlertProps) => {
 
   return (
     <div
-      className={`flex p-4 text-sm rounded-lg z-30 ${
+      className={`fixed bottom-14 flex p-4 text-sm rounded-lg z-30 ${
         props.type === 'SUCCESS' ? successCss : errorCss
       } ${props.className}`}
       role="alert"
