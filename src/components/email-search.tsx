@@ -4,6 +4,7 @@ import { FormEvent, useCallback, useEffect, useState } from 'react';
 import {
   EmailResult,
   EmailStatus,
+  SearchResponse,
   SortDirection,
 } from '@/lib/shared-email-types';
 import Row from './row';
@@ -16,15 +17,24 @@ import {
   ChevronDoubleUpIcon,
 } from '@heroicons/react/20/solid';
 import useNoInitialEffect from '@/lib/use-no-initial-effect';
+import { SearchMeta } from '@tigrisdata/core';
+import { EmailSearchNav } from './email-search-nav';
 
 const EmailStatusLabel = ({ status }: { status: EmailStatus }) => {
   let statusCss = '';
   switch (status) {
     case EmailStatus.Sent:
+    case EmailStatus.DeliveryDelayed:
       statusCss = 'bg-orange-200 text-orange-950';
       break;
     case EmailStatus.Delivered:
+    case EmailStatus.Opened:
+    case EmailStatus.Clicked:
       statusCss = 'bg-green-200 text-green-950';
+      break;
+    case EmailStatus.Bounced:
+    case EmailStatus.Complained:
+      statusCss = 'bg-red-200 text-red-950';
       break;
   }
   return (
@@ -50,17 +60,23 @@ export type EmailSearchProps = {
   statuses: string;
   emails: EmailResult[];
   sortDir: SortDirection;
+  pageNumber: number;
+  meta: SearchMeta;
 };
 
 export const EmailSearch = (props: EmailSearchProps) => {
+  if (props.pageNumber <= 0) throw new Error('pageNumber must be > 0');
+
   const [searchQueryValue, setSearchQueryValue] = useState<string>(props.query);
   const [statusesValue, setStatusesValue] = useState<string>(props.statuses);
   const [sortDir, setSortDir] = useState<SortDirection>(props.sortDir);
+  const [searchMeta, setSearchMeta] = useState<SearchMeta>(props.meta);
   const [searchError, setSearchError] = useState<string>('');
   const [searching, setSearching] = useState<boolean>(false);
   const [emailResults, setEmailResults] = useState<EmailResult[]>(
     reviveDates(props.emails)
   );
+  const [pageNumber, setPageNumber] = useState<number>(props.pageNumber);
 
   const handleStatusFacetChange = (value: string[]) => {
     setStatusesValue(value.join(','));
@@ -72,26 +88,28 @@ export const EmailSearch = (props: EmailSearchProps) => {
     const response = await searchEmail({
       query: searchQueryValue,
       statuses: statusesValue,
-      sortDir,
+      sortdir: sortDir,
+      page: pageNumber,
     });
 
     if (response.status === 200) {
-      const json = (await response.json()) as { results: EmailResult[] };
+      const json = (await response.json()) as SearchResponse;
       json.results = reviveDates(json.results);
       setEmailResults(json.results);
+      setSearchMeta(json.meta!);
     } else {
       const json = await response.json();
       setSearchError(json.error);
     }
 
     setSearching(false);
-  }, [searchQueryValue, statusesValue, sortDir]);
+  }, [searchQueryValue, statusesValue, sortDir, pageNumber]);
 
   useNoInitialEffect(() => {
     performSearch();
     // Submit should perform the search unless the sortDir changes
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sortDir]);
+  }, [pageNumber, sortDir]);
 
   const handleSubmit = async (
     event: FormEvent<HTMLFormElement>
@@ -99,6 +117,10 @@ export const EmailSearch = (props: EmailSearchProps) => {
     event.preventDefault();
     performSearch();
   };
+
+  function handlePageNav(pageNumber: number): void {
+    setPageNumber(pageNumber);
+  }
 
   return (
     <Row>
@@ -147,96 +169,108 @@ export const EmailSearch = (props: EmailSearchProps) => {
           <p>No email results found</p>
         )}
         {!searching && emailResults.length > 0 && (
-          <table className="min-w-full border-separate border-spacing-0 border-none text-left z-0">
-            <thead className="h-8 rounded-md bg-zinc-900">
-              <tr className="text-left text-slate-200 text-xs font-semibold">
-                <th
-                  scope="col"
-                  className="w-[100px] h-8 border-t border-b border-slate-600 px-3 first:rounded-l-md first:border-l last:rounded-r-md last:border-r"
-                >
-                  Status
-                </th>
-                <th
-                  scope="col"
-                  className="w-[302px] h-8 border-t border-b border-slate-600 first:rounded-l-md first:border-l last:rounded-r-md last:border-r"
-                >
-                  To
-                </th>
-                <th
-                  scope="col"
-                  className=" h-8 border-t border-b border-slate-600 px-3 first:rounded-l-md first:border-l last:rounded-r-md last:border-r"
-                >
-                  From
-                </th>
-                <th
-                  scope="col"
-                  className="h-8 border-t border-b border-slate-600 px-3 first:rounded-l-md first:border-l last:rounded-r-md last:border-r"
-                >
-                  Subject
-                </th>
-                <th
-                  scope="col"
-                  className="flex items-center text-right h-8 border-t border-b border-slate-600 px-3 text-xs font-semibold text-slate-200 first:rounded-l-md first:border-l last:rounded-r-md last:border-r"
-                >
-                  <span>Created</span>
-                  <span
-                    className="ml-2 w-4 h-4 cursor-pointer"
-                    title={sortDir}
-                    onClick={() =>
-                      setSortDir(sortDir === 'desc' ? 'asc' : 'desc')
-                    }
+          <section>
+            <table className="min-w-full border-separate border-spacing-0 border-none text-left z-0">
+              <thead className="h-8 rounded-md bg-zinc-900">
+                <tr className="text-left text-slate-200 text-xs font-semibold">
+                  <th
+                    scope="col"
+                    className="w-[100px] h-8 border-t border-b border-slate-600 px-3 first:rounded-l-md first:border-l last:rounded-r-md last:border-r"
                   >
-                    {sortDir === 'desc' ? (
-                      <ChevronDoubleDownIcon className="w-4 h-4" />
-                    ) : (
-                      <ChevronDoubleUpIcon className="w-4 h-4" />
-                    )}
-                  </span>
-                </th>
-                <th
-                  scope="col"
-                  className="h-8 border-t border-b border-slate-600 px-3 text-xs font-semibold text-slate-200 first:rounded-l-md first:border-l last:rounded-r-md last:border-r"
-                >
-                  Body
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {emailResults.map((email) => {
-                return (
-                  <tr key={email.id} className="text-slate-200">
-                    <td className="h-10 truncate border-b border-slate-600 px-3 text-sm">
-                      <EmailStatusLabel status={email.status} />
-                    </td>
-                    <td
-                      scope="row"
-                      className="h-10 truncate border-b border-slate-600 px-3 text-sm font-medium whitespace-nowrap dark:text-white"
+                    Status
+                  </th>
+                  <th
+                    scope="col"
+                    className="w-[302px] h-8 border-t border-b border-slate-600 first:rounded-l-md first:border-l last:rounded-r-md last:border-r"
+                  >
+                    To
+                  </th>
+                  <th
+                    scope="col"
+                    className=" h-8 border-t border-b border-slate-600 px-3 first:rounded-l-md first:border-l last:rounded-r-md last:border-r"
+                  >
+                    From
+                  </th>
+                  <th
+                    scope="col"
+                    className="h-8 border-t border-b border-slate-600 px-3 first:rounded-l-md first:border-l last:rounded-r-md last:border-r"
+                  >
+                    Subject
+                  </th>
+                  <th
+                    scope="col"
+                    className="flex items-center text-right h-8 border-t border-b border-slate-600 px-3 text-xs font-semibold text-slate-200 first:rounded-l-md first:border-l last:rounded-r-md last:border-r"
+                  >
+                    <span>Created</span>
+                    <span
+                      className="ml-2 w-4 h-4 cursor-pointer"
+                      title={sortDir}
+                      onClick={() =>
+                        setSortDir(sortDir === 'desc' ? 'asc' : 'desc')
+                      }
                     >
-                      {email.to.join(', ')}
-                    </td>
-                    <td className="h-10 truncate border-b border-slate-600 px-3 text-sm">
-                      {email.from}
-                    </td>
-                    <td className="h-10 truncate border-b border-slate-600 px-3 text-sm">
-                      {email.subject}
-                    </td>
-                    <td
-                      className="h-10 truncate border-b border-slate-600 px-3 text-sm"
-                      title={DateTime.fromJSDate(email.createdAt).toFormat(
-                        'ff'
+                      {sortDir === 'desc' ? (
+                        <ChevronDoubleDownIcon className="w-4 h-4" />
+                      ) : (
+                        <ChevronDoubleUpIcon className="w-4 h-4" />
                       )}
-                    >
-                      {DateTime.fromJSDate(email.createdAt).toRelative()}
-                    </td>
-                    <td
-                      className="h-10 truncate border-b border-slate-600 px-3 text-sm"
-                      title={email.body}
-                    >{`${email.body.substring(0, 10)}...`}</td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+                    </span>
+                  </th>
+                  <th
+                    scope="col"
+                    className="h-8 border-t border-b border-slate-600 px-3 text-xs font-semibold text-slate-200 first:rounded-l-md first:border-l last:rounded-r-md last:border-r"
+                  >
+                    Body
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {emailResults.map((email) => {
+                  return (
+                    <tr key={email.id} className="text-slate-200">
+                      <td className="h-10 truncate border-b border-slate-600 px-3 text-sm">
+                        <EmailStatusLabel status={email.status} />
+                      </td>
+                      <td
+                        scope="row"
+                        className="h-10 truncate border-b border-slate-600 px-3 text-sm font-medium whitespace-nowrap dark:text-white"
+                      >
+                        {email.to.join(', ')}
+                      </td>
+                      <td className="h-10 truncate border-b border-slate-600 px-3 text-sm">
+                        {email.from}
+                      </td>
+                      <td className="h-10 truncate border-b border-slate-600 px-3 text-sm">
+                        {email.subject}
+                      </td>
+                      <td
+                        className="h-10 truncate border-b border-slate-600 px-3 text-sm"
+                        title={DateTime.fromJSDate(email.createdAt).toFormat(
+                          'ff'
+                        )}
+                      >
+                        {DateTime.fromJSDate(email.createdAt).toRelative()}
+                      </td>
+                      <td
+                        className="h-10 truncate border-b border-slate-600 px-3 text-sm"
+                        title={email.body}
+                      >{`${email.body.substring(0, 10)}...`}</td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+            <EmailSearchNav
+              OnPageNav={handlePageNav}
+              searchMeta={searchMeta}
+              searchParams={{
+                query: searchQueryValue,
+                page: pageNumber,
+                sortdir: sortDir,
+                statuses: statusesValue,
+              }}
+            />
+          </section>
         )}
       </div>
     </Row>

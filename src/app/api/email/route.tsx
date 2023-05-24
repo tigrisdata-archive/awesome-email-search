@@ -5,16 +5,11 @@ import { EmailTemplates } from '@/lib/email-templates';
 import reactElementToJSXString from 'react-element-to-jsx-string';
 import { log } from '@/lib/log';
 import { NextResponse } from 'next/server';
-import { TestEmailStatus } from '@/lib/shared-email-types';
+import { SearchResponse, TestEmailStatus } from '@/lib/shared-email-types';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 const tigris = new Tigris();
 const search = tigris.getSearch();
-
-type SearchResponse = {
-  results: Email[];
-  error: undefined | string;
-};
 
 const toSortOrder = (order: string | null): SortOrder<Email> => {
   let sortOrder: SortOrder<Email> = { field: 'createdAt', order: '$desc' };
@@ -27,6 +22,7 @@ const toSortOrder = (order: string | null): SortOrder<Email> => {
 export async function GET(request: Request) {
   const response: SearchResponse = {
     results: [],
+    meta: undefined,
     error: undefined,
   };
   const { searchParams } = new URL(request.url);
@@ -35,10 +31,19 @@ export async function GET(request: Request) {
     const query = searchParams.get('search') || undefined;
     const statuses = searchParams.get('statuses') || undefined;
     const sortOrder = toSortOrder(searchParams.get('sortdir'));
+
+    // Number(null) = 0
+    const page = Number(searchParams.get('page'));
+    if (page <= 0) {
+      throw new Error(
+        '"page" is a required search parameter and must be a number greater than 0'
+      );
+    }
+
     const emails = await search.getIndex<Email>(EMAIL_INDEX_NAME);
     const searchQuery: SearchQuery<Email> = {
       q: query,
-      hitsPerPage: 50,
+      hitsPerPage: 20,
       sort: sortOrder,
     };
     if (statuses) {
@@ -59,9 +64,10 @@ export async function GET(request: Request) {
       }
     }
     log('searchQuery', JSON.stringify(searchQuery, null, 2));
-    const queryResult = await emails.search(searchQuery, 1);
-    // log('queryResult', queryResult);
+    const queryResult = await emails.search(searchQuery, page);
+    log('queryResult', queryResult);
     response.results = queryResult.hits.map((hit) => hit.document);
+    response.meta = queryResult.meta;
   } catch (ex) {
     console.error(ex);
     response.error = ex as string;
@@ -95,18 +101,17 @@ export async function POST(request: Request) {
   let errorStatus = 400;
   try {
     const formData = await request.formData();
-    if (!formData.get('stage')) {
+    const stage = formData.get('stage');
+    if (!stage) {
       errorStatus = 400;
-      throw new Error('No onboarding stage was provided');
+      throw new Error('"stage" is a required search parameter');
     }
 
-    const emailTemplate = EmailTemplates[formData.get('stage') as string];
+    const emailTemplate = EmailTemplates[stage as string];
 
     if (!emailTemplate) {
       errorStatus = 400;
-      throw new Error(
-        `Could not find email template for stage "${formData.get('stage')}"`
-      );
+      throw new Error(`Could not find email template for stage "${stage}"`);
     }
 
     const body = emailTemplate.template({

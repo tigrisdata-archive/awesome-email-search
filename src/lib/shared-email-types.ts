@@ -1,3 +1,12 @@
+import { SearchMeta } from '@tigrisdata/core';
+
+export type EmailSearchParams = {
+  query?: string;
+  statuses?: string;
+  sortdir?: SortDirection;
+  page?: number;
+};
+
 export enum EmailStatus {
   Sent,
   Delivered,
@@ -13,6 +22,12 @@ export enum TestEmailStatus {
   Complained,
   Bounced,
 }
+
+export type SearchResponse = {
+  results: EmailResult[];
+  meta: undefined | SearchMeta;
+  error: undefined | string;
+};
 
 export interface EmailResult {
   id?: string;

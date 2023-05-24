@@ -1,24 +1,14 @@
 import { cache } from 'react';
-import { SortDirection } from './shared-email-types';
+import { EmailSearchParams, SortDirection } from './shared-email-types';
+import { buildUri } from './link-builder';
 
-export const searchEmail = cache(
-  async ({
-    query,
-    statuses,
-    sortDir,
-  }: {
-    query: string;
-    statuses: string;
-    sortDir: SortDirection;
-  }) => {
-    // Use NEXT_PUBLIC_HOST if present. Fallback to NEXT_PUBLIC_VERCEL_URL if deployed to Vercel
-    const baseUrl = process.env.NEXT_PUBLIC_HOST
-      ? process.env.NEXT_PUBLIC_HOST
-      : `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`;
-    const response = await fetch(
-      `${baseUrl}/api/email?search=${query}&statuses=${statuses}&sortdir=${sortDir}`
-    );
+export const searchEmail = cache(async (searchParams: EmailSearchParams) => {
+  // Use NEXT_PUBLIC_HOST if present. Fallback to NEXT_PUBLIC_VERCEL_URL if deployed to Vercel
+  const baseUri = process.env.NEXT_PUBLIC_HOST
+    ? process.env.NEXT_PUBLIC_HOST
+    : `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`;
+  const uri = buildUri({ baseUri, params: searchParams });
+  const response = await fetch(uri);
 
-    return response;
-  }
-);
+  return response;
+});
