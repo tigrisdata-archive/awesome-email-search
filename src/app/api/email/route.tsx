@@ -1,5 +1,5 @@
 import { EmailResponse, Resend, SendEmailData } from 'resend';
-import { Filter, SearchQuery, Tigris } from '@tigrisdata/core';
+import { Filter, SearchQuery, SortOrder, Tigris } from '@tigrisdata/core';
 import { EMAIL_INDEX_NAME, Email, EmailStatus } from '@/db/models/email';
 import { EmailTemplates } from '@/lib/email-templates';
 import reactElementToJSXString from 'react-element-to-jsx-string';
@@ -16,6 +16,14 @@ type SearchResponse = {
   error: undefined | string;
 };
 
+const toSortOrder = (order: string | null): SortOrder<Email> => {
+  let sortOrder: SortOrder<Email> = { field: 'createdAt', order: '$desc' };
+  if (order === 'asc') {
+    sortOrder.order = '$asc';
+  }
+  return sortOrder;
+};
+
 export async function GET(request: Request) {
   const response: SearchResponse = {
     results: [],
@@ -26,10 +34,12 @@ export async function GET(request: Request) {
   try {
     const query = searchParams.get('search') || undefined;
     const statuses = searchParams.get('statuses') || undefined;
+    const sortOrder = toSortOrder(searchParams.get('sortdir'));
     const emails = await search.getIndex<Email>(EMAIL_INDEX_NAME);
     const searchQuery: SearchQuery<Email> = {
       q: query,
       hitsPerPage: 50,
+      sort: sortOrder,
     };
     if (statuses) {
       const orFilter: Filter<Email>[] = statuses.split(',').map((status) => {
@@ -50,7 +60,7 @@ export async function GET(request: Request) {
     }
     log('searchQuery', JSON.stringify(searchQuery, null, 2));
     const queryResult = await emails.search(searchQuery, 1);
-    log('queryResult', queryResult);
+    // log('queryResult', queryResult);
     response.results = queryResult.hits.map((hit) => hit.document);
   } catch (ex) {
     console.error(ex);
@@ -104,7 +114,7 @@ export async function POST(request: Request) {
       link: formData.get('link')?.valueOf() as string,
     })!;
 
-    console.log('created email');
+    log('created email');
     const testEmailStatus = formData.get('testEmailStatus')
       ? TestEmailStatus[
           formData.get('testEmailStatus') as unknown as TestEmailStatus

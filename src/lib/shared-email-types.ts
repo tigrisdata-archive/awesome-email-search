@@ -31,3 +31,5 @@ export interface EmailResult {
 
   createdAt: Date;
 }
+
+export type SortDirection = 'asc' | 'desc';

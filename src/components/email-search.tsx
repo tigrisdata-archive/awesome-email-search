@@ -1,11 +1,20 @@
 'use client';
 
-import { FormEvent, useState } from 'react';
-import { EmailResult, EmailStatus } from '@/lib/shared-email-types';
+import { FormEvent, useCallback, useEffect, useState } from 'react';
+import {
+  EmailResult,
+  EmailStatus,
+  SortDirection,
+} from '@/lib/shared-email-types';
 import Row from './row';
 import { Alert } from './alert';
 import MultiSelect from './multi-select';
 import { searchEmail } from '@/lib/email-search';
+import { DateTime } from 'luxon';
+import {
+  ChevronDoubleDownIcon,
+  ChevronDoubleUpIcon,
+} from '@heroicons/react/20/solid';
 
 const EmailStatusLabel = ({ status }: { status: EmailStatus }) => {
   let statusCss = '';
@@ -26,35 +35,46 @@ const EmailStatusLabel = ({ status }: { status: EmailStatus }) => {
   );
 };
 
+const reviveDates = (results: EmailResult[]) => {
+  return results.map((result) => {
+    return {
+      ...result,
+      createdAt: new Date(result.createdAt),
+    };
+  });
+};
+
 export type EmailSearchProps = {
   query: string;
   statuses: string;
   emails: EmailResult[];
 };
+
 export const EmailSearch = (props: EmailSearchProps) => {
   const [searchQueryValue, setSearchQueryValue] = useState<string>(props.query);
   const [statusesValue, setStatusesValue] = useState<string>(props.statuses);
   const [searchError, setSearchError] = useState<string>('');
   const [searching, setSearching] = useState<boolean>(false);
-  const [emailResults, setEmailResults] = useState<EmailResult[]>(props.emails);
+  const [sortDir, setSortDir] = useState<SortDirection>('desc');
+  const [emailResults, setEmailResults] = useState<EmailResult[]>(
+    reviveDates(props.emails)
+  );
   const handleStatusFacetChange = (value: string[]) => {
     setStatusesValue(value.join(','));
   };
 
-  const handleSubmit = async (
-    event: FormEvent<HTMLFormElement>
-  ): Promise<void> => {
-    event.preventDefault();
-
+  const performSearch = useCallback(async () => {
     setSearching(true);
 
     const response = await searchEmail({
       query: searchQueryValue,
       statuses: statusesValue,
+      sortDir,
     });
 
     if (response.status === 200) {
-      const json = await response.json();
+      const json = (await response.json()) as { results: EmailResult[] };
+      json.results = reviveDates(json.results);
       setEmailResults(json.results);
     } else {
       const json = await response.json();
@@ -62,6 +82,19 @@ export const EmailSearch = (props: EmailSearchProps) => {
     }
 
     setSearching(false);
+  }, [searchQueryValue, statusesValue, sortDir]);
+
+  useEffect(() => {
+    performSearch();
+    // Submit should perform the search unless the sortDir changes
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sortDir]);
+
+  const handleSubmit = async (
+    event: FormEvent<HTMLFormElement>
+  ): Promise<void> => {
+    event.preventDefault();
+    performSearch();
   };
 
   return (
@@ -146,9 +179,22 @@ export const EmailSearch = (props: EmailSearchProps) => {
                 </th>
                 <th
                   scope="col"
-                  className="text-right h-8 border-t border-b border-slate-600 px-3 text-xs font-semibold text-slate-200 first:rounded-l-md first:border-l last:rounded-r-md last:border-r"
+                  className="flex items-center text-right h-8 border-t border-b border-slate-600 px-3 text-xs font-semibold text-slate-200 first:rounded-l-md first:border-l last:rounded-r-md last:border-r"
                 >
-                  Sent
+                  <span>Sent</span>
+                  <span
+                    className="ml-2 w-4 h-4 cursor-pointer"
+                    title={sortDir}
+                    onClick={() =>
+                      setSortDir(sortDir === 'desc' ? 'asc' : 'desc')
+                    }
+                  >
+                    {sortDir === 'desc' ? (
+                      <ChevronDoubleDownIcon className="w-4 h-4" />
+                    ) : (
+                      <ChevronDoubleUpIcon className="w-4 h-4" />
+                    )}
+                  </span>
                 </th>
               </tr>
             </thead>
@@ -175,8 +221,13 @@ export const EmailSearch = (props: EmailSearchProps) => {
                       0,
                       10
                     )}...`}</td>
-                    <td className="h-10 truncate border-b border-slate-600 px-3 text-sm">
-                      {email.createdAt.toLocaleString()}
+                    <td
+                      className="h-10 truncate border-b border-slate-600 px-3 text-sm"
+                      title={DateTime.fromJSDate(email.createdAt).toFormat(
+                        'ff'
+                      )}
+                    >
+                      {DateTime.fromJSDate(email.createdAt).toRelative({})}
                     </td>
                   </tr>
                 );

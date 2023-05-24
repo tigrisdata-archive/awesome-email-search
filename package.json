@@ -14,13 +14,14 @@
   "dependencies": {
     "@headlessui/react": "^1.7.14",
     "@heroicons/react": "^2.0.18",
-    "@tigrisdata/core": "^1.1.0",
+    "@tigrisdata/core": "^1.2.3",
     "@types/node": "20.1.4",
     "@types/react": "18.2.6",
     "@types/react-dom": "18.2.4",
     "autoprefixer": "10.4.14",
     "eslint": "8.40.0",
     "eslint-config-next": "13.4.2",
+    "luxon": "^3.3.0",
     "next": "^13.4.3",
     "postcss": "8.4.23",
     "react": "18.2.0",
@@ -31,6 +32,7 @@
     "typescript": "5.0.4"
   },
   "devDependencies": {
-    "@tailwindcss/forms": "^0.5.3"
+    "@tailwindcss/forms": "^0.5.3",
+    "@types/luxon": "^3.3.0"
   }
 }
