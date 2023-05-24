@@ -2,6 +2,7 @@
 
 import { Alert } from '@/components/alert';
 import Row from '@/components/row';
+import { sendEmail } from '@/lib/email-api';
 import { EmailTemplates } from '@/lib/email-templates';
 import { TestEmailStatus } from '@/lib/shared-email-types';
 import { FormEvent, useState } from 'react';
@@ -22,15 +23,15 @@ export default function Send() {
     event.preventDefault();
     setSubmitting(true);
 
-    const response = await fetch('/api/email', {
-      method: 'POST',
-      body: new URLSearchParams(formData),
-    });
+    const response = await sendEmail(formData);
 
     const success = response.status === 201;
     setSubmitSuccess(success);
     if (success) {
-      setFormData({ stage: defaultTemplateName, testEmailStatus: '' });
+      setFormData({
+        stage: defaultTemplateName,
+        testEmailStatus: TestEmailStatus.Delivered,
+      });
     } else {
       try {
         const result = await response.json();

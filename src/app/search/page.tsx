@@ -1,5 +1,5 @@
 import { EmailSearch } from '@/components/email-search';
-import { searchEmail } from '@/lib/email-search';
+import { searchEmail } from '@/lib/email-api';
 import { EmailSearchParams, SearchResponse } from '@/lib/shared-email-types';
 
 export default async function Search({
