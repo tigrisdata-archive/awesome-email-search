@@ -1,5 +1,5 @@
 import { InformationCircleIcon, XCircleIcon } from '@heroicons/react/20/solid';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export type AlertProps = {
   title: string;
@@ -15,12 +15,17 @@ const successCss =
   'text-green-800 bg-green-50 dark:bg-gray-800 dark:text-green-400';
 
 export const Alert = (props: AlertProps) => {
-  const [open, setOpen] = useState<boolean>(props.open);
+  const [open, setOpen] = useState<boolean>(false);
+
+  useEffect(() => {
+    setOpen(props.open);
+  }, [props.open]);
+
   if (!open) return <></>;
 
   return (
     <div
-      className={`fixed top-15 flex p-4 text-sm rounded-lg z-30 ${
+      className={`flex p-4 text-sm rounded-lg z-30 ${
         props.type === 'SUCCESS' ? successCss : errorCss
       } ${props.className}`}
       role="alert"

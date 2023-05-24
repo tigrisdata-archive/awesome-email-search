@@ -52,14 +52,20 @@ export type EmailSearchProps = {
 };
 
 export const EmailSearch = (props: EmailSearchProps) => {
-  const [searchQueryValue, setSearchQueryValue] = useState<string>(props.query);
-  const [statusesValue, setStatusesValue] = useState<string>(props.statuses);
-  const [sortDir, setSortDir] = useState<SortDirection>(props.sortDir);
+  const [searchQueryValue, setSearchQueryValue] = useState<string>('');
+  const [statusesValue, setStatusesValue] = useState<string>('');
+  const [sortDir, setSortDir] = useState<SortDirection>('desc');
   const [searchError, setSearchError] = useState<string>('');
   const [searching, setSearching] = useState<boolean>(false);
-  const [emailResults, setEmailResults] = useState<EmailResult[]>(
-    reviveDates(props.emails)
-  );
+  const [emailResults, setEmailResults] = useState<EmailResult[]>([]);
+
+  useEffect(() => {
+    setSearchQueryValue(props.query);
+    setStatusesValue(props.statuses);
+    setSortDir(props.sortDir);
+    setEmailResults(reviveDates(props.emails));
+  }, [props.query, props.statuses, props.sortDir, props.emails]);
+
   const handleStatusFacetChange = (value: string[]) => {
     setStatusesValue(value.join(','));
   };
