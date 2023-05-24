@@ -11,8 +11,12 @@ export const searchEmail = cache(
     statuses: string;
     sortDir: SortDirection;
   }) => {
+    // NEXT_PUBLIC_VERCEL_URL is used if deployed to Vercel
+    const baseUrl = process.env.NEXT_PUBLIC_VERCEL_URL
+      ? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`
+      : process.env.NEXT_PUBLIC_HOST;
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_HOST}/api/email?search=${query}&statuses=${statuses}&sortdir=${sortDir}`
+      `${baseUrl}/api/email?search=${query}&statuses=${statuses}&sortdir=${sortDir}`
     );
 
     return response;
