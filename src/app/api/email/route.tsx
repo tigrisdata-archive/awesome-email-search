@@ -5,12 +5,7 @@ import { EmailTemplates } from '@/lib/email-templates';
 import reactElementToJSXString from 'react-element-to-jsx-string';
 import { log } from '@/lib/log';
 import { NextResponse } from 'next/server';
-import {
-  EMAIL_CACHE_TAG,
-  SearchResponse,
-  TestEmailStatus,
-} from '@/lib/shared-email-types';
-import { revalidateTag } from 'next/cache';
+import { SearchResponse, TestEmailStatus } from '@/lib/shared-email-types';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 const tigris = new Tigris();
@@ -161,7 +156,6 @@ export async function POST(request: Request) {
       console.error('Error occurred saving search index', createResult.error);
     } else {
       log('Index created', createResult);
-      revalidateTag(EMAIL_CACHE_TAG);
     }
   } catch (ex: any) {
     console.error(ex);

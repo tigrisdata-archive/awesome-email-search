@@ -1,7 +1,5 @@
 import { SearchMeta } from '@tigrisdata/core';
 
-export const EMAIL_CACHE_TAG = 'emails';
-
 export type EmailSearchParams = {
   query?: string;
   statuses?: string;
