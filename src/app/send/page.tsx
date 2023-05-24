@@ -13,7 +13,7 @@ export default function Send() {
   const defaultTemplateName = Object.keys(EmailTemplates)[0];
   const [formData, setFormData] = useState<Record<string, string>>({
     stage: defaultTemplateName,
-    testEmailStatus: '',
+    testEmailStatus: TestEmailStatus[TestEmailStatus.Delivered],
   });
 
   const handleSubmit = async (
@@ -72,7 +72,7 @@ export default function Send() {
           <label className="block">
             <span>Email onboarding template</span>
             <select
-              className="mt-1 block w-full form-select text-slate-950 font-sans"
+              className="mt-1 block w-full form-select text-slate-950 font-sans rounded-md"
               name="stage"
               onChange={(e) => {
                 updateFormData('stage', e.target.value);
@@ -97,7 +97,7 @@ export default function Send() {
                   onChange={(ev) =>
                     updateFormData(field.formName, ev.target.value)
                   }
-                  className="mt-1 block w-full form-input text-slate-950 font-sans"
+                  className="mt-1 block w-full form-input text-slate-950 font-sans rounded-md"
                   type="text"
                   name={field.formName}
                   required
@@ -112,15 +112,12 @@ export default function Send() {
             <select
               name="test_email_status"
               value={formData['testEmailStatus']}
-              className="mt-1 block w-full form-input text-slate-950 font-sans"
+              className="mt-1 block w-full form-input text-slate-950 font-sans rounded-md"
               onChange={(e) => {
-                const val = e.target.value;
-                const status: TestEmailStatus | '' =
-                  val === '' ? '' : (val as unknown as TestEmailStatus);
-                updateFormData('testEmailStatus', status as string);
+                const status = e.target.value as unknown as TestEmailStatus;
+                updateFormData('testEmailStatus', TestEmailStatus[status]);
               }}
             >
-              <option value="">None</option>
               {Object.keys(TestEmailStatus)
                 .filter((status) => isNaN(Number(status)))
                 .map((status) => {
@@ -132,9 +129,9 @@ export default function Send() {
                 })}
             </select>
           </label>
-          <label className="flex justify-end">
+          <label className="flex">
             <button
-              className="px-4 py-2 font-semibold text-sm bg-green-50 dark:bg-gray-800 text-white rounded-md shadow-sm opacity-100 hover:bg-green-300 hover:dark:bg-gray-600"
+              className="grow px-4 py-2 h-10 font-semibold text-sm bg-green-50 dark:bg-gray-800 text-white rounded-md shadow-sm opacity-100 hover:bg-green-300 hover:dark:bg-gray-600"
               disabled={submitting}
             >
               {submitting ? 'Submitting...' : 'Send'}

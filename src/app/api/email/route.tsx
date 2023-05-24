@@ -77,7 +77,7 @@ export async function GET(request: Request) {
 }
 
 const getToEmail = (testEmailStatus: TestEmailStatus | string) => {
-  log('getToEmail', testEmailStatus, TestEmailStatus.Bounced);
+  log('getToEmail', testEmailStatus);
 
   switch (testEmailStatus) {
     case TestEmailStatus.Bounced:
@@ -87,9 +87,6 @@ const getToEmail = (testEmailStatus: TestEmailStatus | string) => {
       return 'delivered@resend.dev';
     case TestEmailStatus.Complained:
       return 'complained@resend.dev';
-      break;
-    case '':
-      return process.env.DEFAULT_EMAIL as string;
       break;
     default:
       throw new Error('Could not determine test email status');
