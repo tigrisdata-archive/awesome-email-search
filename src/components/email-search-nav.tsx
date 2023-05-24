@@ -69,7 +69,7 @@ export const EmailSearchNav = ({
 
   return (
     <div className={`${className}`}>
-      <nav className={`flex justify-center gap-2 mt-5`}>
+      <nav className={`flex justify-center gap-2 mt-5 text-sm`}>
         {searchMeta.page.current > 1 && (
           <NavLink
             navText={<ChevronLeftIcon className="w-6 h-6" />}

@@ -1,5 +1,7 @@
 import { SearchMeta } from '@tigrisdata/core';
 
+export const EMAIL_CACHE_TAG = 'emails';
+
 export type EmailSearchParams = {
   query?: string;
   statuses?: string;
@@ -8,19 +10,19 @@ export type EmailSearchParams = {
 };
 
 export enum EmailStatus {
-  Sent,
-  Delivered,
-  DeliveryDelayed,
-  Complained,
-  Bounced,
-  Clicked,
-  Opened,
+  Sent = 'Sent',
+  Delivered = 'Delivered',
+  DeliveryDelayed = 'DeliveryDelayed',
+  Complained = 'Complained',
+  Bounced = 'Bounced',
+  Clicked = 'Clicked',
+  Opened = 'Opened',
 }
 
 export enum TestEmailStatus {
-  Delivered,
-  Complained,
-  Bounced,
+  Delivered = 'Delivered',
+  Complained = 'Complained',
+  Bounced = 'Bounced',
 }
 
 export type SearchResponse = {

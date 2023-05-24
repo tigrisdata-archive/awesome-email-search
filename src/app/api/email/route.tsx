@@ -5,7 +5,12 @@ import { EmailTemplates } from '@/lib/email-templates';
 import reactElementToJSXString from 'react-element-to-jsx-string';
 import { log } from '@/lib/log';
 import { NextResponse } from 'next/server';
-import { SearchResponse, TestEmailStatus } from '@/lib/shared-email-types';
+import {
+  EMAIL_CACHE_TAG,
+  SearchResponse,
+  TestEmailStatus,
+} from '@/lib/shared-email-types';
+import { revalidateTag } from 'next/cache';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 const tigris = new Tigris();
@@ -77,7 +82,7 @@ export async function GET(request: Request) {
 }
 
 const getToEmail = (testEmailStatus: TestEmailStatus | string) => {
-  log('getToEmail', testEmailStatus, TestEmailStatus.Bounced);
+  log('getToEmail', testEmailStatus);
 
   switch (testEmailStatus) {
     case TestEmailStatus.Bounced:
@@ -87,9 +92,6 @@ const getToEmail = (testEmailStatus: TestEmailStatus | string) => {
       return 'delivered@resend.dev';
     case TestEmailStatus.Complained:
       return 'complained@resend.dev';
-      break;
-    case '':
-      return process.env.DEFAULT_EMAIL as string;
       break;
     default:
       throw new Error('Could not determine test email status');
@@ -159,6 +161,7 @@ export async function POST(request: Request) {
       console.error('Error occurred saving search index', createResult.error);
     } else {
       log('Index created', createResult);
+      revalidateTag(EMAIL_CACHE_TAG);
     }
   } catch (ex: any) {
     console.error(ex);
