@@ -157,7 +157,7 @@ export const EmailSearch = (props: EmailSearchProps) => {
         />
         <button
           disabled={searching}
-          className="flex-grow lg:grow-0 h-9 lg:w-36 px-4 font-semibold text-sm bg-green-50 dark:bg-gray-800 text-white rounded-md shadow-sm opacity-100 hover:bg-green-300 hover:dark:bg-gray-600"
+          className="flex-grow lg:grow-0 h-10 lg:h-auto self-stretch lg:w-36 px-4 font-semibold text-sm bg-green-50 dark:bg-gray-800 text-white rounded-md shadow-sm opacity-100 hover:bg-green-300 hover:dark:bg-gray-600"
         >
           {searching ? 'Searching...' : 'Search'}
         </button>
