@@ -21,6 +21,7 @@ export default async function Search({
       emails={json.results || []}
       query={query}
       statuses={statuses}
+      sortDir={sortdir}
     />
   );
 }

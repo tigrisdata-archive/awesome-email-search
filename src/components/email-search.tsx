@@ -48,14 +48,15 @@ export type EmailSearchProps = {
   query: string;
   statuses: string;
   emails: EmailResult[];
+  sortDir: SortDirection;
 };
 
 export const EmailSearch = (props: EmailSearchProps) => {
   const [searchQueryValue, setSearchQueryValue] = useState<string>(props.query);
   const [statusesValue, setStatusesValue] = useState<string>(props.statuses);
+  const [sortDir, setSortDir] = useState<SortDirection>(props.sortDir);
   const [searchError, setSearchError] = useState<string>('');
   const [searching, setSearching] = useState<boolean>(false);
-  const [sortDir, setSortDir] = useState<SortDirection>('desc');
   const [emailResults, setEmailResults] = useState<EmailResult[]>(
     reviveDates(props.emails)
   );
@@ -112,7 +113,7 @@ export const EmailSearch = (props: EmailSearchProps) => {
       <form
         action="/api/email"
         method="GET"
-        className="flex flex-col lg:flex-row gap-6 w-5/6 lg:w-4/6"
+        className="flex flex-col lg:flex-row gap-6 w-full max-w-5xl"
         onSubmit={handleSubmit}
       >
         <input
@@ -138,7 +139,7 @@ export const EmailSearch = (props: EmailSearchProps) => {
         </button>
       </form>
 
-      <div className="mt-10 relative overflow-x-scroll shadow-md sm:rounded-lg w-5/6 lg:w-4/6 mx-4">
+      <div className="mt-10 relative overflow-x-scroll shadow-md sm:rounded-lg  w-full max-w-5xl mx-4">
         {searching && <p>Searching...</p>}
         {!searching && emailResults.length === 0 && (
           <p>No email results found</p>
@@ -175,7 +176,7 @@ export const EmailSearch = (props: EmailSearchProps) => {
                   scope="col"
                   className="flex items-center text-right h-8 border-t border-b border-slate-600 px-3 text-xs font-semibold text-slate-200 first:rounded-l-md first:border-l last:rounded-r-md last:border-r"
                 >
-                  <span>Sent</span>
+                  <span>Created</span>
                   <span
                     className="ml-2 w-4 h-4 cursor-pointer"
                     title={sortDir}
