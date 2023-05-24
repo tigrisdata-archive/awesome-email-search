@@ -18,7 +18,6 @@ import {
   SortDirection,
 } from '@/lib/shared-email-types';
 import { searchEmail } from '@/lib/email-api';
-import useNoInitialEffect from '@/lib/use-no-initial-effect';
 
 // components
 import {
