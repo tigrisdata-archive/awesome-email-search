@@ -6,7 +6,7 @@ export default function Footer() {
   return (
     <Row>
       <Link
-        className="flex items-center gap-2"
+        className="flex items-center gap-2 mb-24 lg:mb-5"
         href="https://github.com/tigrisdata-community/awesome-email-search"
       >
         <Image
