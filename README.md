@@ -1,4 +1,4 @@
-# Tigris Movie Database
+# Awesome Email Search with Resend & Tigris Search
 
 An example of sending emails with [Resend](https://resend.com?utm_source=awesome-email-search&utm_medium=code&utm_campaign=awesome-email-search) and indexing & searching those emails with [Tigris Search](https://www.tigrisdata.com/docs/concepts/searching/?utm_source=awesome-email-search&utm_medium=code&utm_campaign=awesome-email-search).
 
