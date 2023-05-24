@@ -62,7 +62,7 @@ export default function Send() {
         open={submitSuccess !== undefined}
         onClose={() => setSubmitSuccess(undefined)}
       />
-      <h1 className="text-lg pb-4">Send an email</h1>
+      <h1 className="text-xl font-bold pb-4">Send an email</h1>
       <form
         action="/api/email"
         method="POST"

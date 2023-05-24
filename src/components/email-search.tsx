@@ -143,7 +143,7 @@ export const EmailSearch = (props: EmailSearchProps) => {
         onClose={() => setSearchError('')}
       />
 
-      <h1 className="text-lg pb-4">Search</h1>
+      <h1 className="text-xl font-bold pb-4">Search</h1>
 
       <form
         action="/api/email"
