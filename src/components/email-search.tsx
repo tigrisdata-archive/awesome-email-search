@@ -173,12 +173,6 @@ export const EmailSearch = (props: EmailSearchProps) => {
                 </th>
                 <th
                   scope="col"
-                  className="h-8 border-t border-b border-slate-600 px-3 text-xs font-semibold text-slate-200 first:rounded-l-md first:border-l last:rounded-r-md last:border-r"
-                >
-                  Body
-                </th>
-                <th
-                  scope="col"
                   className="flex items-center text-right h-8 border-t border-b border-slate-600 px-3 text-xs font-semibold text-slate-200 first:rounded-l-md first:border-l last:rounded-r-md last:border-r"
                 >
                   <span>Sent</span>
@@ -195,6 +189,12 @@ export const EmailSearch = (props: EmailSearchProps) => {
                       <ChevronDoubleUpIcon className="w-4 h-4" />
                     )}
                   </span>
+                </th>
+                <th
+                  scope="col"
+                  className="h-8 border-t border-b border-slate-600 px-3 text-xs font-semibold text-slate-200 first:rounded-l-md first:border-l last:rounded-r-md last:border-r"
+                >
+                  Body
                 </th>
               </tr>
             </thead>
@@ -217,18 +217,18 @@ export const EmailSearch = (props: EmailSearchProps) => {
                     <td className="h-10 truncate border-b border-slate-600 px-3 text-sm">
                       {email.subject}
                     </td>
-                    <td className="h-10 truncate border-b border-slate-600 px-3 text-sm">{`${email.body.substring(
-                      0,
-                      10
-                    )}...`}</td>
                     <td
                       className="h-10 truncate border-b border-slate-600 px-3 text-sm"
                       title={DateTime.fromJSDate(email.createdAt).toFormat(
                         'ff'
                       )}
                     >
-                      {DateTime.fromJSDate(email.createdAt).toRelative({})}
+                      {DateTime.fromJSDate(email.createdAt).toRelative()}
                     </td>
+                    <td
+                      className="h-10 truncate border-b border-slate-600 px-3 text-sm"
+                      title={email.body}
+                    >{`${email.body.substring(0, 10)}...`}</td>
                   </tr>
                 );
               })}
