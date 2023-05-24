@@ -6,12 +6,12 @@ import { usePathname } from 'next/navigation';
 
 const links = [
   {
-    name: 'Search',
-    path: '/search',
-  },
-  {
     name: 'Send',
     path: '/send',
+  },
+  {
+    name: 'Search',
+    path: '/search',
   },
 ];
 
@@ -38,7 +38,7 @@ export default function Header() {
           <span className="flex self-start">With</span>
           <a
             className="pointer-events-none flex place-items-start gap-2 lg:pointer-events-auto lg:p-0 ml-2 mr-2"
-            href="https://www.tigrisdata.com?utm_source=awesome-email-search&utm_medium=code&utm_campaign=awesome-email-search"
+            href="https://resend.com?utm_source=awesome-email-search&utm_medium=code&utm_campaign=awesome-email-search"
             target="_blank"
             rel="noopener noreferrer"
           >
