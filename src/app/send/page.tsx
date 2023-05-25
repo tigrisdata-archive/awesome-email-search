@@ -132,7 +132,7 @@ export default function Send() {
           </label>
           <label className="flex">
             <button
-              className="grow px-4 py-2 h-10 font-semibold text-sm bg-green-50 dark:bg-gray-800 text-white rounded-md shadow-sm opacity-100 hover:bg-green-300 hover:dark:bg-gray-600"
+              className="grow px-4 py-2 h-10 font-semibold text-sm bg-gray-800 text-white rounded-md shadow-sm opacity-100 hover:bg-gray-600"
               disabled={submitting}
             >
               {submitting ? 'Submitting...' : 'Send'}

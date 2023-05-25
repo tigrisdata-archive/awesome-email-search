@@ -17,7 +17,7 @@ export default function Home() {
         />
         <span className="m-4">&amp;</span>
         <Image
-          className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] light:invert"
+          className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] invert dark:invert-0"
           src="/resend.svg"
           alt="Resend Logo"
           width={180}

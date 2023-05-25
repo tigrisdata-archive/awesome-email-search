@@ -182,7 +182,7 @@ export const EmailSearch = (props: EmailSearchProps) => {
           <section>
             <table className="min-w-full border-separate border-spacing-0 border-none text-left z-0">
               <thead className="h-8 rounded-md bg-zinc-900">
-                <tr className="text-left text-slate-200 text-xs font-semibold">
+                <tr className="text-left text- text-slate-200 text-xs font-semibold">
                   <th
                     scope="col"
                     className="w-[100px] h-8 border-t border-b border-slate-600 px-3 first:rounded-l-md first:border-l last:rounded-r-md last:border-r"
@@ -209,7 +209,7 @@ export const EmailSearch = (props: EmailSearchProps) => {
                   </th>
                   <th
                     scope="col"
-                    className="flex items-center text-right h-8 border-t border-b border-slate-600 px-3 text-xs font-semibold text-slate-200 first:rounded-l-md first:border-l last:rounded-r-md last:border-r"
+                    className="flex items-center text-right h-8 border-t border-b border-slate-600 px-3 text-xs font-semibold first:rounded-l-md first:border-l last:rounded-r-md last:border-r"
                   >
                     <span>Created</span>
                     <span
@@ -228,7 +228,7 @@ export const EmailSearch = (props: EmailSearchProps) => {
                   </th>
                   <th
                     scope="col"
-                    className="h-8 border-t border-b border-slate-600 px-3 text-xs font-semibold text-slate-200 first:rounded-l-md first:border-l last:rounded-r-md last:border-r"
+                    className="h-8 border-t border-b border-slate-600 px-3 text-xs font-semibold first:rounded-l-md first:border-l last:rounded-r-md last:border-r"
                   >
                     Body
                   </th>
@@ -237,7 +237,7 @@ export const EmailSearch = (props: EmailSearchProps) => {
               <tbody>
                 {emailResults.map((email) => {
                   return (
-                    <tr key={email.id} className="text-slate-200">
+                    <tr key={email.id} className="dark:text-slate-200">
                       <td className="h-10 truncate border-b border-slate-600 px-3 text-sm">
                         <EmailStatusLabel status={email.status} />
                       </td>
