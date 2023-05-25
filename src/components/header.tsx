@@ -34,7 +34,7 @@ export default function Header() {
             <span>Awesome Email Search</span>
           </Link>
         </p>
-        <div className="fixed bottom-0 left-0 flex w-full items-start justify-center lg:justify-start py-4 lg:py-0 lg:static h-auto lg:w-auto bg-gray-950 lg:bg-none z-10 text-white">
+        <div className="fixed bottom-0 left-0 flex w-full items-start justify-center lg:justify-start py-4 lg:py-0 lg:static h-auto lg:w-auto bg-gray-950 lg:bg-transparent lg:bg-none z-10 text-white">
           <span className="flex self-start">With</span>
           <a
             className="pointer-events-none flex place-items-start gap-2 lg:pointer-events-auto lg:p-0 ml-2 mr-2"
