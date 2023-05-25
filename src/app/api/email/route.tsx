@@ -145,7 +145,7 @@ export async function POST(request: Request) {
       to: sendEmailRequest.to as string[],
       firstTo: sendEmailRequest.to[0] as string, // store the first email so we can sort by email address
       from: sendEmailRequest.from,
-      status: EmailStatus.Sent,
+      status: EmailStatus.Pending,
       subject: emailTemplate.emailSubject,
       body: bodyString,
       createdAt: new Date(),

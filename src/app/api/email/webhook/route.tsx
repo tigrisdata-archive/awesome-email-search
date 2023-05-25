@@ -16,6 +16,7 @@ type ResendWebookType =
   | 'email.bounced'
   | 'email.opened'
   | 'email.clicked';
+
 interface ResendWebhook {
   type: ResendWebookType;
   created_at: Date;

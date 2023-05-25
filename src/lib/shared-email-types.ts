@@ -8,6 +8,7 @@ export type EmailSearchParams = {
 };
 
 export enum EmailStatus {
+  Pending = 'Pending', // Not a resend state
   Sent = 'Sent',
   Delivered = 'Delivered',
   DeliveryDelayed = 'DeliveryDelayed',

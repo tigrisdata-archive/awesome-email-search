@@ -33,6 +33,7 @@ import { EmailSearchNav } from './email-search-nav';
 const EmailStatusLabel = ({ status }: { status: EmailStatus }) => {
   let statusCss = '';
   switch (status) {
+    case EmailStatus.Pending:
     case EmailStatus.Sent:
     case EmailStatus.DeliveryDelayed:
       statusCss = 'bg-orange-200 text-orange-950';
@@ -175,7 +176,7 @@ export const EmailSearch = (props: EmailSearchProps) => {
 
       <div className="mt-10 relative overflow-x-scroll shadow-md sm:rounded-lg  w-full max-w-5xl mx-4">
         {!searching && emailResults.length === 0 && (
-          <p>No email results found</p>
+          <p className="text-center my-10">No email results found</p>
         )}
         {emailResults.length > 0 && (
           <section>
