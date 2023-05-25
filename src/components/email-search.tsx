@@ -174,11 +174,10 @@ export const EmailSearch = (props: EmailSearchProps) => {
       </form>
 
       <div className="mt-10 relative overflow-x-scroll shadow-md sm:rounded-lg  w-full max-w-5xl mx-4">
-        {searching && <p>Searching...</p>}
         {!searching && emailResults.length === 0 && (
           <p>No email results found</p>
         )}
-        {!searching && emailResults.length > 0 && (
+        {emailResults.length > 0 && (
           <section>
             <table className="min-w-full border-separate border-spacing-0 border-none text-left z-0">
               <thead className="h-8 rounded-md bg-zinc-900">

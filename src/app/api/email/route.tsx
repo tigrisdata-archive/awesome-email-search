@@ -11,6 +11,8 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 const tigris = new Tigris();
 const search = tigris.getSearch();
 
+const PAGE_SIZE = 10;
+
 const toSortOrder = (order: string | null): SortOrder<Email> => {
   let sortOrder: SortOrder<Email> = { field: 'createdAt', order: '$desc' };
   if (order === 'asc') {
@@ -43,7 +45,7 @@ export async function GET(request: Request) {
     const emails = await search.getIndex<Email>(EMAIL_INDEX_NAME);
     const searchQuery: SearchQuery<Email> = {
       q: query,
-      hitsPerPage: 20,
+      hitsPerPage: PAGE_SIZE,
       sort: sortOrder,
     };
     if (statuses) {
