@@ -3,7 +3,7 @@ import * as React from 'react';
 
 const template: React.FC<Readonly<EmailTemplateProps>> = ({ name, link }) => (
   <div>
-    <h1>Welcome, {name}!</h1>
+    <h1>Hi, {name}!</h1>
     <p>
       We hope your time with our product is going well. We wanted to let you
       know we have a fantastic community that we&apos;d love you to be a part
@@ -15,9 +15,9 @@ const template: React.FC<Readonly<EmailTemplateProps>> = ({ name, link }) => (
   </div>
 );
 
-const JoinCommunityEmailTemplate: IEmailTemplate = {
-  templateName: 'Join our Product community 🌱',
-  emailSubject: 'Join our Product community 🌱',
+const FeedbackRequestTemplate: IEmailTemplate = {
+  templateName: 'Product feedback request 👂',
+  emailSubject: 'Product feedback request 👂',
   template,
   fields: [
     {
@@ -25,10 +25,10 @@ const JoinCommunityEmailTemplate: IEmailTemplate = {
       formName: 'name',
     },
     {
-      displayName: 'Community link',
+      displayName: 'Calendar link',
       formName: 'link',
     },
   ],
 };
 
-export default JoinCommunityEmailTemplate;
+export default FeedbackRequestTemplate;

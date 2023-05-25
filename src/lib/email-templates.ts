@@ -1,3 +1,4 @@
+import FeedbackRequestTemplate from '@/components/email-templates/feedback-request';
 import JoinCommunityEmailTemplate from '@/components/email-templates/join-community';
 import WelcomeEmailTemplate from '@/components/email-templates/welcome';
 
@@ -23,30 +24,7 @@ export interface IEmailTemplate {
 }
 
 export const EmailTemplates: IEmailTemplates = {
-  welcome: {
-    templateName: 'Welcome',
-    emailSubject: 'Welcome to our Product 🐯',
-    template: WelcomeEmailTemplate,
-    fields: [
-      {
-        displayName: 'Name',
-        formName: 'name',
-      },
-    ],
-  },
-  community: {
-    templateName: 'Join the community',
-    emailSubject: 'Join our Product community 🌱',
-    template: JoinCommunityEmailTemplate,
-    fields: [
-      {
-        displayName: 'Name',
-        formName: 'name',
-      },
-      {
-        displayName: 'Community link',
-        formName: 'link',
-      },
-    ],
-  },
+  welcome: WelcomeEmailTemplate,
+  community: JoinCommunityEmailTemplate,
+  feedback: FeedbackRequestTemplate,
 };

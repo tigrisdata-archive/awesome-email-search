@@ -1,9 +1,7 @@
-import { EmailTemplateProps } from '@/lib/email-templates';
+import { EmailTemplateProps, IEmailTemplate } from '@/lib/email-templates';
 import * as React from 'react';
 
-export const WelcomeEmailTemplate: React.FC<Readonly<EmailTemplateProps>> = ({
-  name,
-}) => (
+const template: React.FC<Readonly<EmailTemplateProps>> = ({ name }) => (
   <div>
     <h1>Welcome, {name}!</h1>
     <p>
@@ -12,5 +10,17 @@ export const WelcomeEmailTemplate: React.FC<Readonly<EmailTemplateProps>> = ({
     </p>
   </div>
 );
+
+const WelcomeEmailTemplate: IEmailTemplate = {
+  templateName: 'Welcome to our Product 🐯',
+  emailSubject: 'Welcome to our Product 🐯',
+  template,
+  fields: [
+    {
+      displayName: 'Name',
+      formName: 'name',
+    },
+  ],
+};
 
 export default WelcomeEmailTemplate;
