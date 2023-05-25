@@ -69,10 +69,10 @@ export const EmailSearchNav = ({
 
   return (
     <div className={`${className}`}>
-      <nav className={`flex justify-center gap-2 mt-5 text-sm`}>
+      <nav className={`flex justify-center items-center gap-2 mt-5 text-sm`}>
         {searchMeta.page.current > 1 && (
           <NavLink
-            navText={<ChevronLeftIcon className="w-6 h-6" />}
+            navText={<ChevronLeftIcon className="w-4 h-4" />}
             toPage={searchMeta.page.current - 1}
           />
         )}
@@ -82,12 +82,12 @@ export const EmailSearchNav = ({
         />
         {searchMeta.page.current < searchMeta.totalPages && (
           <NavLink
-            navText={<ChevronRightIcon className="w-6 h-6" />}
+            navText={<ChevronRightIcon className="w-4 h-4" />}
             toPage={searchMeta.page.current + 1}
           />
         )}
       </nav>
-      <div className="flex justify-center mt-2 text-xs">
+      <div className="flex justify-center items-center mt-2 text-xs">
         Results {searchMeta.page.size * (searchMeta.page.current - 1) + 1} to{' '}
         {Math.min(
           searchMeta.found,
