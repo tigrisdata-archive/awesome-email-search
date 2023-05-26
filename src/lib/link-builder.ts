@@ -1,7 +1,9 @@
 import { EmailSearchParams } from './shared-email-types';
 
 export const buildQuery = (params: EmailSearchParams): string => {
-  return `search=${params.query}&statuses=${params.statuses}&sortdir=${params.sortdir}&page=${params.page}`;
+  return Object.keys(params)
+    .map((key) => `${key}=${params[key]}`)
+    .join('&');
 };
 
 export const buildUri = ({

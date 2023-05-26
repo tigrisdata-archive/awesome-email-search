@@ -1,6 +1,8 @@
 import { SearchMeta } from '@tigrisdata/core';
 
 export type EmailSearchParams = {
+  [index: string]: string | number | undefined;
+
   query?: string;
   statuses?: string;
   sortdir?: SortDirection;
