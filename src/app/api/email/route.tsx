@@ -30,7 +30,7 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   log('searchParams', searchParams);
   try {
-    const query = searchParams.get('search') || undefined;
+    const query = searchParams.get('query') || undefined;
     const statuses = searchParams.get('statuses') || undefined;
     const sortOrder = toSortOrder(searchParams.get('sortdir'));
 
@@ -97,19 +97,17 @@ const getToEmail = (testEmailStatus: TestEmailStatus | string) => {
 
 export async function POST(request: Request) {
   let emailIndex;
-  let errorStatus = 400;
+  let statusCode = 400;
   try {
     const formData = await request.formData();
     const stage = formData.get('stage');
     if (!stage) {
-      errorStatus = 400;
       throw new Error('"stage" is a required search parameter');
     }
 
     const emailTemplate = EmailTemplates[stage as string];
 
     if (!emailTemplate) {
-      errorStatus = 400;
       throw new Error(`Could not find email template for stage "${stage}"`);
     }
 
@@ -117,8 +115,8 @@ export async function POST(request: Request) {
       name: formData.get('name')?.valueOf() as string,
       link: formData.get('link')?.valueOf() as string,
     })!;
-
     log('created email');
+
     const testEmailStatus = formData.get('testEmailStatus')
       ? TestEmailStatus[
           formData.get('testEmailStatus') as unknown as TestEmailStatus
@@ -137,6 +135,7 @@ export async function POST(request: Request) {
     };
     const sendResponse = await resend.sendEmail(sendEmailRequest);
     log('sent email');
+    statusCode = 201;
 
     const bodyString = reactElementToJSXString(body);
     log('created body string', bodyString);
@@ -151,9 +150,11 @@ export async function POST(request: Request) {
       createdAt: new Date(),
       id: (sendResponse as EmailResponse).id,
     };
+
     log('creating index', emailIndex);
     const emails = await search.getIndex<Email>(EMAIL_INDEX_NAME);
     const createResult = await emails.createOne(emailIndex);
+
     if (createResult.error) {
       console.error('Error occurred saving search index', createResult.error);
     } else {
@@ -161,7 +162,8 @@ export async function POST(request: Request) {
     }
   } catch (ex: any) {
     console.error(ex);
-    return NextResponse.json({ error: ex.toString() }, { status: errorStatus });
+    return NextResponse.json({ error: ex.toString() }, { status: statusCode });
   }
-  return NextResponse.json(emailIndex, { status: 201 });
+
+  return NextResponse.json(emailIndex, { status: statusCode });
 }

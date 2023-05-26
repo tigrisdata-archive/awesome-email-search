@@ -44,7 +44,7 @@ export async function GET(_request: Request) {
 }
 
 export async function POST(request: Request) {
-  let errorStatusCode = 500;
+  let statusCode = 500;
   try {
     // TODO request signing
 
@@ -57,8 +57,9 @@ export async function POST(request: Request) {
     const emailsIndex = await search.getIndex<Email>(EMAIL_INDEX_NAME);
     const toUpdate = await emailsIndex.getOne(body.data.email_id);
     log('found document', JSON.stringify(toUpdate, null, 2));
+
     if (toUpdate === undefined) {
-      errorStatusCode = 404;
+      statusCode = 404;
       throw new Error(
         `Could not find document in index for Email with id ${body.data.email_id}`
       );
@@ -67,14 +68,15 @@ export async function POST(request: Request) {
     toUpdate.document.status = newStatus;
     const updateStatus = await emailsIndex.updateOne(toUpdate.document);
     log('Update result', JSON.stringify(updateStatus, null, 2));
+
     if (updateStatus.error) {
       const msg = 'Error updating indexed document:' + updateStatus.error;
       console.error(msg);
       throw new Error(msg);
     }
-
-    return NextResponse.json({}, { status: 200 });
+    statusCode = 200;
   } catch (ex) {
-    return NextResponse.json({}, { status: errorStatusCode });
+    console.error(ex);
   }
+  return NextResponse.json({}, { status: statusCode });
 }
