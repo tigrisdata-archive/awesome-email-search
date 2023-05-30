@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "tigris:init": "TIGRIS_PROJECT=\"${npm_config_project:=awesome-email-search} && tigris create project $TIGRIS_PROJECT -o . --create-env-file && mv .env .env.local",
+    "tigris:init": "TIGRIS_PROJECT=\"${npm_config_project:=awesome-email-search}\" && tigris create project $TIGRIS_PROJECT -o . --create-env-file && mv .env .env.local",
     "tigris:setup": "npx ts-node ./scripts/setup.ts",
     "predev": "npm run tigris:setup",
     "dev": "next dev",
