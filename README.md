@@ -2,6 +2,8 @@
 
 An example of sending emails with [Resend](https://resend.com?utm_source=awesome-email-search&utm_medium=code&utm_campaign=awesome-email-search) and indexing & searching those emails with [Tigris Search](https://www.tigrisdata.com/docs/concepts/searching/?utm_source=awesome-email-search&utm_medium=code&utm_campaign=awesome-email-search).
 
+https://github.com/tigrisdata-community/awesome-email-search/assets/328367/c87c5c59-b6fc-4814-9278-be0cfdac6084
+
 The application is built with Next.js and Tailwind CSS.
 
 ## Install dependencies
