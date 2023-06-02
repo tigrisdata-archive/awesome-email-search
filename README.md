@@ -24,7 +24,7 @@ Tigris project configuration to a `.env.local` file.
 npm run tigris:init
 ```
 
-By default, the name `awesome-email-search` is as the project name. You can override
+By default, the name `awesome-email-search` is used as the project name. You can override
 this by passing in `--project={name}` flag. For example:
 
 ```sh
